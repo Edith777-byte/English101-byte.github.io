@@ -1307,11 +1307,16 @@ function renderVideoGrid() {
       </div>
     </div>
   `).join('');
-}
+ async function handleVideoClick(index) {
+    const v = VIDEO_LESSONS[index];
+    const quizId = v.title.toLowerCase().replace(/\s+/g, '_') + "_1";
+    
+    // 1. Prepare the quiz immediately
+    openLesson(quizId);
 
-async function handleVideoClick(index) {
-  const { data } = await _supabase.auth.getSession();
-  const loggedIn = !!(data && data.session);
+    // 2. Check for login to play the video
+    const { data } = await _supabase.auth.getSession();
+ }
   if (!loggedIn) {
     // Show login prompt
     document.getElementById('videoModalContent').innerHTML = `
