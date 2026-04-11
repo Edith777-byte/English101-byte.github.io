@@ -1631,6 +1631,9 @@ async function generateAIQuiz() {
   const topic = document.getElementById('aiQuizTopic').value.trim();
   const count = document.getElementById('aiQuizCount').value;
   if (!topic) { showToast('Please enter a topic first.'); return; }
+  const manualKey = document.getElementById('userApiKey').value;
+if (!manualKey) { showToast('Please paste your API key in the Admin box first.'); return; }
+  
 
   const btn = document.getElementById('aiGenerateBtn');
   const resultDiv = document.getElementById('aiResult');
