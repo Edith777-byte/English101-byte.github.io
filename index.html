@@ -867,7 +867,6 @@ async function addVideo() {
   btn.disabled = true;
 
   const { error } = await supabase.from('videos').insert([{ title, video_url: url, topic, duration, folder }]);
-
     lesson_number: VIDEO_LESSONS.length + 1
   }]).select();
 
