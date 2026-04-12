@@ -1366,7 +1366,30 @@ function openVideo(index) {
     `;
     document.getElementById('videoModal').classList.add('open');
 }
+async function handleAuth(type) {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value.trim();
+    
+    if (!email || !password) return alert('Please fill in all fields');
 
+    if (type === 'signup') {
+        const { error } = await _supabase.auth.signUp({ email, password });
+        if (error) alert(error.message);
+        else alert('Check your email for confirmation!');
+    } else {
+        const { error } = await _supabase.auth.signInWithPassword({ email, password });
+        if (error) alert(error.message);
+        else {
+            location.reload(); // This will log you in and show the admin panel if you are the admin
+        }
+    }
+}
+
+async function handleLogout() {
+    await _supabase.auth.signOut();
+    location.reload();
+  }
+                            
 async function addVideo() {
     const title = document.getElementById('newVideoTitle').value.trim();
     const folder = document.getElementById('newVideoFolder').value.trim();
