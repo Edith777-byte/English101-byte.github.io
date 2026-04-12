@@ -1276,74 +1276,65 @@ function renderVideoGrid() {
   const folders = {};
   VIDEO_LESSONS.forEach((v, i) => {
     const folder = v.folder || 'General';
-    if (!folders[folder]) folders[folder] = [];
-    folders[folder].push({...v, index: i});
-  });
+     grid.innerHTML = Object.entries(folders).map(([folderName, videos]) => `
+        <div class="video-folder">
+            <div class="folder-header">
+                <span class="folder-icon">${folderIcons[folderName] || '📂'}</span>
+                <span class="folder-title">${folderName}</span>
+                <span class="folder-count">${videos.length} lesson${videos.length > 1 ? 's' : ''}</span>
+            </div>
+            <div class="video-grid">
+                ${videos.map(v => `
+                    <div class="video-card" onclick="handleVideoClick(${v.index})" style="opacity:1;transform:none;">
+                        <div class="video-thumb" style="background: linear-gradient(135deg, #0d1b3e, #1a2f5e);">
+                            <div class="play-btn-thumb" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:white;"><i class="fas fa-play"></i></div>
+                            <div class="video-lock" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.5);color:white;font-size:0.7rem;padding:3px 8px;border-radius:100px;">🔐 Members Only</div>
+                            <div class="video-topic" style="position:absolute;bottom:10px;left:10px;background:#c9a84c;color:#0d1b3e;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:100px;">${v.topic}</div>
+                        </div>
+                        <div class="video-info" style="padding:15px;">
+                            <div class="video-title" style="font-weight:700;color:#0d1b3e;margin-bottom:5px;">${v.title}</div>
+                            <div class="video-meta" style="font-size:0.75rem;color:#6b7a99;"><span>📖 Lesson ${v.index + 1}</span> | <span>⏱️ ${v.duration}</span></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
 
-  const folderIcons = {'Grammar':'📖','Phonetics':'🎙️','Exam Prep':'📝','Writing':'✍️','Speaking':'💬','General':'📚','WAEC':'🏆'};
-
-  
-    </div>
-  `).join('');
- async function handleVideoClick(index) {
+async function handleVideoClick(index) {
     const v = VIDEO_LESSONS[index];
     if (!v) return;
 
-    // This automatically creates the ID like 'concord_1' from the title
     const quizId = v.title.toLowerCase().replace(/\s+/g, '_') + "_1";
-    
-    // 1. Try to load the quiz for this video
     if (typeof openLesson === "function") {
         openLesson(quizId);
     }
 
-    // 2. Play the video
-    openVideo(index);
-}
-
-    // 1. Prepare the quiz immediately
-    openLesson(quizId);
-  }
-    // 2. Check for login to play the video
     const { data } = await _supabase.auth.getSession();
- }
-  if (!loggedIn) {
-    
-}
+    const loggedIn = !!(data && data.session);
 
-function renderAdminVideos() {
-  const tbody = document.getElementById('videosTableBody');
-  if (!tbody) return;
-  if (VIDEO_LESSONS.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--slate);">No videos yet. Add one below!</td></tr>';
-    return;
-  }
-  tbody.innerHTML = VIDEO_LESSONS.map(v => `
-    <tr>
-      <td>${v.title}</td>
-      <td>${v.folder ||         // Show login prompt
+    if (loggedIn) {
+        openVideo(index);
+    } else {
         document.getElementById('videoModalContent').innerHTML = `
             <div style="text-align:center;padding:24px;">
                 <div style="font-size:2.5rem;margin-bottom:16px;">🔐</div>
-                <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--navy);margin-bottom:12px;">Members Only</h2>
-                <p style="color:var(--slate);margin-bottom:24px;">This video is exclusively for enrolled students.</p>
+                <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#0d1b3e;margin-bottom:12px;">Members Only</h2>
+                <p style="color:#6b7a99;margin-bottom:24px;">This video is exclusively for enrolled students.</p>
                 <a href="#portal" class="btn-primary" style="text-decoration:none;" onclick="closeModal('videoModal')">Login to View</a>
             </div>
         `;
         document.getElementById('videoModal').classList.add('open');
-        return;
     }
-    
-    // If logged in, play the video
-    openVideo(index);
 }
-'General'}</td>
-      <td>${v.topic}</td>
-      <td>${v.duration}</td>
-      <td><button class="action-btn action-remove" onclick="deleteVideo(${v.id})">Delete</button></td>
-    </tr>
-  `).join('');
-}
+
+function renderAdminVideos() {
+   if (!folders[folder]) folders[folder] = [];
+    folders[folder].push({...v, index: i});
+  });
+
+  const folderIcons = {'Grammar':'📖','Phonetics':'🎙️','Exam Prep':'📝','Writing':'✍️','Speaking':'💬','General':'📚','WAEC':'🏆'};
 
 function openVideo(index) {
   const v = VIDEO_LESSONS[index];
